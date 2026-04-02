@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Petugas\ParkingController;
 
 // ================== ROOT ==================
 Route::get('/', function () {
@@ -31,9 +32,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 });
 
 // ================== PETUGAS ==================
-Route::get('/petugas/dashboard', function () {
-    if (auth()->user()->role != 'petugas') {
-        abort(403);
-    }
-    return view('petugas.dashboard');
-})->middleware('auth');
+Route::middleware('auth')->prefix('petugas')->name('petugas.')->group(function () {
+    Route::get('/dashboard', [ParkingController::class, 'index'])->name('dashboard');
+    Route::get('/masuk', [ParkingController::class, 'masukIndex'])->name('masuk.index');
+    Route::post('/masuk', [ParkingController::class, 'masuk'])->name('masuk');
+    Route::get('/karcis/{ticketCode}', [ParkingController::class, 'karcis'])->name('karcis');
+    Route::get('/keluar', [ParkingController::class, 'keluarIndex'])->name('keluar');
+    Route::post('/keluar', [ParkingController::class, 'keluarProses'])->name('keluar.proses');
+});

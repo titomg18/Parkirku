@@ -23,14 +23,6 @@
                 <span class="font-medium">Data Kendaraan</span>
             </a>
             <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                <i class="fas fa-sign-in-alt w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                <span class="font-medium">Kendaraan Masuk</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                <i class="fas fa-sign-out-alt w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                <span class="font-medium">Kendaraan Keluar</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
                 <i class="fas fa-money-bill-wave w-5 text-gray-400 group-hover:text-emerald-500"></i>
                 <span class="font-medium">Tarif Parkir</span>
             </a>
