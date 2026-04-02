@@ -1,4 +1,4 @@
-{{-- resources/views/dashboard.blade.php --}}
+{{-- resources/views/admin/dashboard.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -78,119 +78,17 @@
 </head>
 <body>
 
-    {{-- Navbar (sama seperti sebelumnya) --}}
-    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200/50 fixed top-0 left-0 right-0 z-40 shadow-sm">
-        <div class="px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="text-gray-600 hover:text-emerald-600 focus:outline-none lg:hidden mr-3 transition">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    <div class="flex items-center space-x-2">
-                        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-2 rounded-xl shadow-md">
-                            <i class="fas fa-parking text-white text-lg"></i>
-                        </div>
-                        <span class="font-extrabold text-gray-800 text-xl tracking-tight">ParkirKu</span>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-5">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-semibold text-gray-700">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500 capitalize">{{ auth()->user()->role }}</p>
-                    </div>
-                    <form method="POST" action="/logout">
-                        @csrf
-                        <button type="submit" class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-1.5 rounded-lg transition transform hover:scale-105 text-sm font-medium flex items-center space-x-1 shadow-sm">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span class="hidden sm:inline">Keluar</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </nav>
+    {{-- Navbar --}}
+    @include('admin.partials.navbar')
 
-    {{-- Overlay --}}
+    {{-- Overlay untuk mobile --}}
     <div id="overlay" class="overlay fixed inset-0 bg-black/50 z-50 lg:hidden transition-all duration-300"></div>
 
     <div class="flex pt-16 min-h-screen">
-        {{-- SIDEBAR - STRUKTUR BARU SESUAI REKOMENDASI --}}
-        <aside id="sidebar" class="sidebar sidebar-transition bg-white/95 backdrop-blur-sm border-r border-gray-200 w-72 fixed lg:static lg:translate-x-0 overflow-y-auto">
-            <div class="p-5 space-y-2">
-                {{-- User Profile Ringkas --}}
-                <div class="flex items-center space-x-3 pb-4 mb-2 border-b border-gray-200">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-lg">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                    <div>
-                        <p class="font-semibold text-gray-800">{{ auth()->user()->name }}</p>
-                        <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
-                    </div>
-                </div>
+        {{-- Sidebar --}}
+        @include('admin.partials.sidebar')
 
-                {{-- Menu Utama Admin --}}
-                <nav class="space-y-1">
-                    {{-- Dashboard --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-tachometer-alt w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Dashboard</span>
-                    </a>
-
-                    {{-- Data Kendaraan --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-database w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Data Kendaraan</span>
-                    </a>
-
-                    {{-- Kendaraan Masuk --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-sign-in-alt w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Kendaraan Masuk</span>
-                    </a>
-
-                    {{-- Kendaraan Keluar --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-sign-out-alt w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Kendaraan Keluar</span>
-                    </a>
-
-                    {{-- Tarif Parkir (baru) --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-money-bill-wave w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Tarif Parkir</span>
-                    </a>
-
-                    {{-- Laporan --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-chart-line w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Laporan</span>
-                    </a>
-
-                    {{-- Manajemen User (baru) --}}
-                    <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                        <i class="fas fa-users w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                        <span class="font-medium">Manajemen User</span>
-                    </a>
-                </nav>
-
-                {{-- Separator opsional --}}
-                <div class="pt-6 mt-6 border-t border-gray-200">
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4">Pengaturan</p>
-                    <div class="mt-2 space-y-1">
-                        <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                            <i class="fas fa-user-cog w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                            <span class="font-medium">Profil</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                            <i class="fas fa-cog w-5 text-gray-400 group-hover:text-emerald-500"></i>
-                            <span class="font-medium">Pengaturan</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        {{-- Main Content (tetap sama seperti sebelumnya) --}}
+        {{-- Main Content --}}
         <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
             <div class="animate-fade-up">
                 {{-- Welcome Card --}}
@@ -308,9 +206,7 @@
     </div>
 
     {{-- Footer --}}
-    <footer class="bg-white border-t border-gray-200 py-4 sm:py-5 text-center text-gray-400 text-xs sm:text-sm">
-        &copy; {{ date('Y') }} ParkirKu — Sistem Manajemen Parkir Modern
-    </footer>
+    @include('admin.partials.footer')
 
     <script>
         const sidebar = document.getElementById('sidebar');
