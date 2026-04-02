@@ -1,4 +1,3 @@
-{{-- resources/views/petugas/karcis.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
