@@ -38,8 +38,8 @@
                 <i class="fas fa-chart-line w-5 text-gray-400 group-hover:text-emerald-500"></i>
                 <span class="font-medium">Laporan</span>
             </a>
-            <a href="#" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 transition group">
-                <i class="fas fa-users w-5 text-gray-400 group-hover:text-emerald-500"></i>
+            <a href="{{ route('admin.users.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl {{ request()->routeIs('admin.users.*') ? 'bg-emerald-50 text-emerald-600' : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-600' }} transition group">
+                <i class="fas fa-users w-5 {{ request()->routeIs('admin.users.*') ? 'text-emerald-500' : 'text-gray-400 group-hover:text-emerald-500' }}"></i>
                 <span class="font-medium">Manajemen User</span>
             </a>
         </nav>

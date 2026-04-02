@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\UserController;
 
 // ================== ROOT ==================
 Route::get('/', function () {
@@ -20,6 +21,14 @@ Route::get('/admin/dashboard', function () {
     }
     return view('admin.dashboard');
 })->middleware('auth');
+
+// ================== ADMIN - USER MANAGEMENT ==================
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 // ================== PETUGAS ==================
 Route::get('/petugas/dashboard', function () {
