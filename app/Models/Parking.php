@@ -27,6 +27,24 @@ class Parking extends Model
         return $this->belongsTo(User::class, 'petugas_id');
     }
 
+    public function getIsInapAttribute(): bool
+    {
+        if ($this->status !== 'parkir' || !$this->waktu_masuk) {
+            return false;
+        }
+
+        return $this->waktu_masuk->lt(now()->startOfDay());
+    }
+
+    public function getJumlahMalamAttribute(): int
+    {
+        if (!$this->is_inap || !$this->waktu_masuk) {
+            return 0;
+        }
+
+        return max(1, $this->waktu_masuk->diffInDays(now()));
+    }
+
     /**
      * Generate kode ticket unik.
      */

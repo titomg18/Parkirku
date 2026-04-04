@@ -29,11 +29,26 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         $masukHariIni = Parking::whereDate('waktu_masuk', today())->count();
         $keluarHariIni = Parking::whereDate('waktu_keluar', today())->count();
         $sedangParkir = Parking::where('status', 'parkir')->count();
-        $inapSekarang = Parking::where('status', 'parkir')->where('is_inap', true)->count();
+        $inapSekarang = Parking::where('status', 'parkir')
+            ->whereDate('waktu_masuk', '<', today())
+            ->count();
         $pendapatanHariIni = Parking::whereDate('waktu_keluar', today())->sum('tarif');
         $totalPetugas = User::where('role', 'petugas')->count();
+        $komposisi = Parking::selectRaw('jenis_kendaraan, count(*) as total')
+            ->where('status', 'parkir')
+            ->groupBy('jenis_kendaraan')
+            ->get();
+        $grafik7Hari = collect(range(6, 0))->map(function ($i) {
+            $tgl = now()->subDays($i);
+            return [
+                'label' => $tgl->format('D'),
+                'masuk' => Parking::whereDate('waktu_masuk', $tgl->toDateString())->count(),
+                'pendapatan' => Parking::whereDate('waktu_keluar', $tgl->toDateString())->sum('tarif'),
+            ];
+        });
+        $aktivitas = Parking::latest()->take(10)->get();
 
-        return view('admin.dashboard', compact('masukHariIni', 'keluarHariIni', 'sedangParkir', 'inapSekarang', 'pendapatanHariIni', 'totalPetugas'));
+        return view('admin.dashboard', compact('masukHariIni', 'keluarHariIni', 'sedangParkir', 'inapSekarang', 'pendapatanHariIni', 'totalPetugas', 'komposisi', 'grafik7Hari', 'aktivitas'));
     })->name('dashboard');
 
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan');
@@ -62,7 +77,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         } elseif ($tab === 'keluar') {
             $query->whereDate('waktu_keluar', $tanggal);
         } elseif ($tab === 'inap') {
-            $query->where('status', 'parkir')->where('is_inap', true);
+            $query->where('status', 'parkir')
+                ->whereDate('waktu_masuk', '<', today());
         } else {
             $query->whereDate('waktu_masuk', $tanggal);
         }
@@ -80,7 +96,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
             'semua' => Parking::count(),
             'masuk' => Parking::whereDate('waktu_masuk', $tanggal)->count(),
             'keluar' => Parking::whereDate('waktu_keluar', $tanggal)->count(),
-            'inap' => Parking::where('status', 'parkir')->where('is_inap', true)->count(),
+            'inap' => Parking::where('status', 'parkir')->whereDate('waktu_masuk', '<', today())->count(),
         ];
 
         return view('admin.kendaraan', compact('tab', 'cari', 'jenis', 'tanggal', 'data', 'counts'));
