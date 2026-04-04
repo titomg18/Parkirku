@@ -170,10 +170,10 @@
                                     </td>
                                     <td class="px-4 py-3 text-xs text-gray-500">{{ $p->petugas?->name ?? '—' }}</td>
                                     <td class="px-4 py-3 text-center">
-                                        <a href="{{ route('petugas.karcis', $p->ticket_code) }}" target="_blank"
+                                        <button onclick="openKarcisModal('{{ route('petugas.karcis', $p->ticket_code) }}')"
                                             class="inline-flex items-center justify-center w-7 h-7 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition" title="Cetak Karcis">
                                             <i class="fas fa-print text-xs"></i>
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                                 @empty
@@ -197,6 +197,42 @@
         </main>
     </div>
     @include('petugas.partials.footer')
+
+    {{-- ===== MODAL POPUP KARCIS ===== --}}
+    <div id="karcisModal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:16px;">
+        <div style="background:white;border-radius:20px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.3);width:100%;max-width:380px;animation:modalPop 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+            <style>
+                @keyframes modalPop { from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)} }
+            </style>
+            {{-- Top Bar --}}
+            <div style="background:linear-gradient(135deg,#1d4ed8,#4f46e5);padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:8px;color:white">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span style="font-weight:700;font-size:14px">Preview Karcis</span>
+                </div>
+                <button onclick="closeKarcisModal()" style="color:rgba(255,255,255,0.7);font-size:18px;line-height:1;background:none;border:none;cursor:pointer;padding:2px 6px;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            {{-- Iframe --}}
+            <div style="background:#f0f4f8;display:flex;justify-content:center;overflow-y:auto;max-height:65vh">
+                <iframe id="karcisIframe" src="" scrolling="auto" style="border:none;width:340px;height:560px;background:#f0f4f8"></iframe>
+            </div>
+            {{-- Actions --}}
+            <div style="padding:14px 18px;display:flex;gap:10px;border-top:1px solid #e2e8f0;background:white">
+                <button onclick="cetakKarcis()"
+                    style="flex:1;background:#2563eb;color:white;font-weight:700;padding:10px;border-radius:12px;font-size:13px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(37,99,235,0.3)"
+                    onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+                    <i class="fas fa-print"></i> Cetak Karcis
+                </button>
+                <button onclick="closeKarcisModal()"
+                    style="flex:1;border:2px solid #e2e8f0;color:#4b5563;font-weight:600;padding:10px;border-radius:12px;font-size:13px;background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"
+                    onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         const sidebar=document.getElementById('sidebar'),toggleBtn=document.getElementById('sidebarToggle'),overlay=document.getElementById('overlay');
         function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('active');}
@@ -214,6 +250,24 @@
                 row.style.display = (no.includes(q) && (s===''||st===s)) ? '' : 'none';
             });
         }
+
+        // Modal karcis
+        function openKarcisModal(url) {
+            document.getElementById('karcisIframe').src = url;
+            const modal = document.getElementById('karcisModal');
+            modal.style.display = 'flex';
+        }
+        function closeKarcisModal() {
+            document.getElementById('karcisModal').style.display = 'none';
+            document.getElementById('karcisIframe').src = '';
+        }
+        function cetakKarcis() {
+            const iframe = document.getElementById('karcisIframe');
+            if (iframe && iframe.contentWindow) iframe.contentWindow.print();
+        }
+        document.getElementById('karcisModal').addEventListener('click', function(e) {
+            if (e.target === this) closeKarcisModal();
+        });
     </script>
 </body>
 </html>

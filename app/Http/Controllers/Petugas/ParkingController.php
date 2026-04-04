@@ -52,7 +52,8 @@ class ParkingController extends Controller
             'petugas_id'      => auth()->id(),
         ]);
 
-        return redirect()->route('petugas.karcis', $parking->ticket_code);
+        return redirect()->route('petugas.masuk.index')
+            ->with('show_karcis', $parking->ticket_code);
     }
 
     /**

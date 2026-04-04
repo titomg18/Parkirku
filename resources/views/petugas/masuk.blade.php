@@ -21,6 +21,51 @@
             .overlay { z-index: 90; }
         }
         .plat-input { font-family: 'Courier Prime', monospace; text-transform: uppercase; letter-spacing: 0.12em; }
+
+        /* ===== MODAL KARCIS ===== */
+        #karcisModal {
+            display: none;
+            position: fixed; inset: 0; z-index: 999;
+            background: rgba(0,0,0,0.6);
+            align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        #karcisModal.show { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 380px;
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes modalPop { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+        .modal-topbar {
+            background: linear-gradient(135deg, #1d4ed8 0%, #4f46e5 100%);
+            padding: 14px 18px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-iframe-wrap {
+            background: #f0f4f8;
+            display: flex; justify-content: center;
+            padding: 0;
+            overflow-y: auto;
+            max-height: 65vh;
+        }
+        .modal-iframe-wrap iframe {
+            border: none;
+            width: 340px;
+            height: 560px;
+            background: #f0f4f8;
+        }
+        .modal-actions {
+            padding: 14px 18px;
+            display: flex; gap: 10px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+        @media print { #karcisModal { display: none !important; } }
     </style>
 </head>
 <body>
@@ -39,7 +84,6 @@
 
                 {{-- Form Card --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    {{-- Card Header --}}
                     <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-5">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
@@ -52,11 +96,9 @@
                         </div>
                     </div>
 
-                    {{-- Form --}}
                     <form action="{{ route('petugas.masuk') }}" method="POST" class="p-6 space-y-5">
                         @csrf
 
-                        {{-- No Kendaraan --}}
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 Nomor Plat Kendaraan <span class="text-red-500">*</span>
@@ -71,7 +113,6 @@
                             @enderror
                         </div>
 
-                        {{-- Jenis Kendaraan --}}
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 Jenis Kendaraan <span class="text-red-500">*</span>
@@ -110,7 +151,6 @@
                             @enderror
                         </div>
 
-                        {{-- Info waktu --}}
                         <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-3">
                             <i class="fas fa-clock text-blue-400"></i>
                             <div>
@@ -119,7 +159,6 @@
                             </div>
                         </div>
 
-                        {{-- Tombol --}}
                         <div class="flex gap-3 pt-1">
                             <a href="{{ route('petugas.dashboard') }}"
                                 class="flex-1 border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-3 rounded-xl text-sm transition text-center">
@@ -137,7 +176,48 @@
         </main>
     </div>
     @include('petugas.partials.footer')
+
+    {{-- ===== MODAL POPUP KARCIS ===== --}}
+    <div id="karcisModal" @if(session('show_karcis')) class="show" @endif>
+        <div class="modal-box">
+            {{-- Top Bar --}}
+            <div class="modal-topbar">
+                <div class="flex items-center gap-2 text-white">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span class="font-bold text-sm">Karcis Berhasil Dibuat!</span>
+                </div>
+                <button onclick="closeKarcisModal()" class="text-white/70 hover:text-white transition text-lg leading-none">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            {{-- Iframe karcis --}}
+            <div class="modal-iframe-wrap">
+                <iframe
+                    id="karcisIframe"
+                    @if(session('show_karcis'))
+                        src="{{ route('petugas.karcis', session('show_karcis')) }}"
+                    @endif
+                    scrolling="auto"
+                ></iframe>
+            </div>
+
+            {{-- Action buttons --}}
+            <div class="modal-actions">
+                <button onclick="cetakKarcis()"
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow shadow-blue-200">
+                    <i class="fas fa-print"></i> Cetak Karcis
+                </button>
+                <button onclick="closeKarcisModal()"
+                    class="flex-1 border-2 border-gray-200 text-gray-600 hover:bg-gray-50 font-semibold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <i class="fas fa-check"></i> Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Sidebar
         const sidebar=document.getElementById('sidebar'),toggleBtn=document.getElementById('sidebarToggle'),overlay=document.getElementById('overlay');
         function closeSidebar(){sidebar.classList.remove('open');overlay.classList.remove('active');}
         function openSidebar(){sidebar.classList.add('open');overlay.classList.add('active');}
@@ -159,6 +239,23 @@
             const pos = this.selectionStart;
             this.value = this.value.toUpperCase();
             this.setSelectionRange(pos, pos);
+        });
+
+        // Modal functions
+        function closeKarcisModal() {
+            document.getElementById('karcisModal').classList.remove('show');
+        }
+
+        function cetakKarcis() {
+            const iframe = document.getElementById('karcisIframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.print();
+            }
+        }
+
+        // Tutup modal jika klik backdrop
+        document.getElementById('karcisModal').addEventListener('click', function(e) {
+            if (e.target === this) closeKarcisModal();
         });
     </script>
 </body>
