@@ -27,7 +27,22 @@ class ParkingController extends Controller
      */
     public function masukIndex()
     {
-        return view('petugas.masuk');
+        $tarifs = \App\Models\Tarif::all()->keyBy('jenis_kendaraan');
+
+        // Fallback jika belum ada di DB
+        $defaultTarif = [
+            'motor' => ['tarif_per_jam' => 2000,  'tarif_inap' => 15000],
+            'mobil' => ['tarif_per_jam' => 5000,  'tarif_inap' => 40000],
+            'truk'  => ['tarif_per_jam' => 10000, 'tarif_inap' => 70000],
+        ];
+
+        foreach ($defaultTarif as $jenis => $def) {
+            if (!$tarifs->has($jenis)) {
+                $tarifs[$jenis] = (object) array_merge(['jenis_kendaraan' => $jenis], $def);
+            }
+        }
+
+        return view('petugas.masuk', compact('tarifs'));
     }
 
     /**
@@ -62,7 +77,8 @@ class ParkingController extends Controller
     public function karcis(string $ticketCode)
     {
         $parking = Parking::where('ticket_code', $ticketCode)->firstOrFail();
-        return view('petugas.karcis', compact('parking'));
+        $tarif   = \App\Models\Tarif::getByJenis($parking->jenis_kendaraan);
+        return view('petugas.karcis', compact('parking', 'tarif'));
     }
 
     /**

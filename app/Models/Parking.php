@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Tarif;
 
 class Parking extends Model
 {
@@ -68,16 +69,31 @@ class Parking extends Model
 
     /**
      * Hitung tarif otomatis berdasarkan durasi.
-     * Motor: Rp 2.000/jam, Mobil: Rp 5.000/jam, Truk: Rp 10.000/jam
+     * Tarif diambil dari tabel tarifs (dikonfigurasi admin).
+     * Jika melewati tengah malam → tarif inap per malam.
+     * Jika hari yang sama → tarif per jam (min 1 jam, dibulatkan ke atas).
      */
     public function hitungTarif(): int
     {
-        $jam = max(1, ceil($this->durasi / 60)); // minimal 1 jam
-        $tarifPerJam = match($this->jenis_kendaraan) {
-            'mobil' => 5000,
-            'truk'  => 10000,
-            default => 2000, // motor
-        };
-        return $jam * $tarifPerJam;
+        $selesai = $this->waktu_keluar ?? now();
+
+        // Ambil tarif dari DB, fallback ke default jika belum ada
+        $tarifRecord = Tarif::getByJenis($this->jenis_kendaraan);
+
+        // Hitung jumlah malam (beda hari kalender)
+        $hariMasuk  = $this->waktu_masuk->copy()->startOfDay();
+        $hariKeluar = $selesai->copy()->startOfDay();
+        $jumlahMalam = (int) $hariMasuk->diffInDays($hariKeluar);
+
+        if ($jumlahMalam >= 1) {
+            // Parkir inap: hitung per malam
+            return $jumlahMalam * (int) $tarifRecord->tarif_inap;
+        }
+
+        // Parkir regular: hitung per jam (minimal 1 jam, dibulatkan ke atas)
+        $menit = (int) $this->waktu_masuk->diffInMinutes($selesai);
+        $jam   = max(1, (int) ceil($menit / 60));
+
+        return $jam * (int) $tarifRecord->tarif_per_jam;
     }
 }

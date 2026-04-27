@@ -76,7 +76,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Tarif/jam</span>
-                    <span class="info-value">Rp {{ number_format(match($parking->jenis_kendaraan){'mobil'=>5000,'truk'=>10000,default=>2000}, 0, ',', '.') }}</span>
+                    <span class="info-value">Rp {{ number_format($tarif->tarif_per_jam, 0, ',', '.') }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Petugas</span>

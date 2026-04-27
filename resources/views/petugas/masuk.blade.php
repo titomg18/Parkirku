@@ -124,7 +124,7 @@
                                     <div class="peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 peer-checked:shadow-lg peer-checked:shadow-blue-200 border-2 border-gray-200 rounded-xl p-4 text-center transition-all hover:border-blue-300 hover:bg-blue-50">
                                         <i class="fas fa-motorcycle text-2xl block mb-2"></i>
                                         <p class="text-sm font-bold">Motor</p>
-                                        <p class="text-xs opacity-60 mt-1">Rp 2.000/jam</p>
+                                        <p class="text-xs opacity-60 mt-1">Rp {{ number_format($tarifs['motor']->tarif_per_jam ?? 2000, 0, ',', '.') }}/jam</p>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
@@ -133,7 +133,7 @@
                                     <div class="peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 peer-checked:shadow-lg peer-checked:shadow-blue-200 border-2 border-gray-200 rounded-xl p-4 text-center transition-all hover:border-blue-300 hover:bg-blue-50">
                                         <i class="fas fa-car text-2xl block mb-2"></i>
                                         <p class="text-sm font-bold">Mobil</p>
-                                        <p class="text-xs opacity-60 mt-1">Rp 5.000/jam</p>
+                                        <p class="text-xs opacity-60 mt-1">Rp {{ number_format($tarifs['mobil']->tarif_per_jam ?? 5000, 0, ',', '.') }}/jam</p>
                                     </div>
                                 </label>
                                 <label class="cursor-pointer">
@@ -142,7 +142,7 @@
                                     <div class="peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 peer-checked:shadow-lg peer-checked:shadow-blue-200 border-2 border-gray-200 rounded-xl p-4 text-center transition-all hover:border-blue-300 hover:bg-blue-50">
                                         <i class="fas fa-truck text-2xl block mb-2"></i>
                                         <p class="text-sm font-bold">Truk</p>
-                                        <p class="text-xs opacity-60 mt-1">Rp 10.000/jam</p>
+                                        <p class="text-xs opacity-60 mt-1">Rp {{ number_format($tarifs['truk']->tarif_per_jam ?? 10000, 0, ',', '.') }}/jam</p>
                                     </div>
                                 </label>
                             </div>

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\TarifController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Petugas\ParkingController;
 use App\Models\Parking;
@@ -102,23 +103,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         return view('admin.kendaraan', compact('tab', 'cari', 'jenis', 'tanggal', 'data', 'counts'));
     })->name('kendaraan');
 
-    Route::get('/tarif', function () {
-        if (auth()->user()->role != 'admin') {
-            abort(403);
-        }
-
-        $tarifs = collect([
-            (object)['id' => 1, 'jenis_kendaraan' => 'motor', 'tarif_per_jam' => 2000, 'tarif_inap' => 15000],
-            (object)['id' => 2, 'jenis_kendaraan' => 'mobil', 'tarif_per_jam' => 5000, 'tarif_inap' => 40000],
-            (object)['id' => 3, 'jenis_kendaraan' => 'truk', 'tarif_per_jam' => 10000, 'tarif_inap' => 70000],
-        ]);
-
-        return view('admin.tarif', compact('tarifs'));
-    })->name('tarif');
-
-    Route::put('/tarif/{id}', function () {
-        return redirect()->route('admin.tarif')->with('success', 'Tarif berhasil diperbarui!');
-    })->name('tarif.update');
+    Route::get('/tarif', [TarifController::class, 'index'])->name('tarif');
+    Route::put('/tarif/{id}', [TarifController::class, 'update'])->name('tarif.update');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
